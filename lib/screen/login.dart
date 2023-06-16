@@ -1,4 +1,11 @@
+import 'dart:convert';
+
+import 'package:disce/screen/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:disce/global.dart' as globals;
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -8,6 +15,74 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late bool _passwordVisible;
+  late TextEditingController _usernameController;
+  late TextEditingController _passwordController;
+  late bool _isLoading;
+  late bool _error;
+  late String _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _passwordVisible = false;
+    _usernameController = TextEditingController();
+    _passwordController = TextEditingController();
+    _isLoading = false;
+    _error = false;
+    _errorMessage = "None";
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<http.Response> loginRequest() async {
+    Map<String, String> headers = {
+      "Content-type": "application/json; charset=UTF-8"
+    };
+    Map<String, String> jsonBody = {
+      'username': _usernameController.text,
+      'password': _passwordController.text,
+    };
+    debugPrint(globals.apiLinks);
+    final response = await http.post(
+        Uri.https(globals.apiLinks, "/api/v1/users/login"),
+        headers: headers,
+        body: jsonEncode(jsonBody));
+    debugPrint(response.statusCode.toString());
+    if (response.statusCode == 200) {
+      setState(() {
+        _isLoading = !_isLoading;
+        _error = false;
+        _passwordVisible = false;
+      });
+      await SessionManager()
+          .set("accessToken", json.decode(response.body)['accessToken']);
+      goToHome();
+    } else {
+      setState(() {
+        _isLoading = !_isLoading;
+        _error = true;
+        _errorMessage = json.decode(response.body)['message'];
+      });
+    }
+    debugPrint(response.body);
+    return response;
+  }
+
+  void goToHome() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,103 +100,150 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Text(
-              "Bắt đầu học",
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            Text(
-              "Đăng nhập tài khoản của bạn",
-              style: TextStyle(
-                fontSize: 25,
-                color: Color.fromARGB(255, 152, 163, 199),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Login',
-                  labelStyle: TextStyle(
-                    fontSize: 20,
-                  ),
-                  floatingLabelStyle: TextStyle(
-                    color: Color.fromARGB(255, 104, 107, 255),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 104, 107, 255),
-                      width: 2,
-                    ),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 172, 172, 172),
-                      width: 2,
-                    ),
+        child: _isLoading
+            ? const Center(
+                child: SizedBox(
+                  height: 50,
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.circleStrokeSpin,
+                    colors: [Color.fromARGB(255, 104, 107, 255)],
+                    strokeWidth: 2,
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  labelStyle: TextStyle(
-                    fontSize: 20,
-                  ),
-                  floatingLabelStyle: TextStyle(
-                    color: Color.fromARGB(255, 104, 107, 255),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 104, 107, 255),
-                      width: 2,
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Bắt đầu học",
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Color.fromARGB(255, 172, 172, 172),
-                      width: 2,
+                  const Text(
+                    "Đăng nhập tài khoản của bạn",
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: Color.fromARGB(255, 152, 163, 199),
                     ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
+                      controller: _usernameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                        labelStyle: TextStyle(
+                          fontSize: 20,
+                        ),
+                        floatingLabelStyle: TextStyle(
+                          color: Color.fromARGB(255, 104, 107, 255),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 104, 107, 255),
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 172, 172, 172),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: const TextStyle(
+                          fontSize: 20,
+                        ),
+                        floatingLabelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 104, 107, 255),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: _passwordVisible
+                              ? const Icon(Icons.visibility_off)
+                              : const Icon(Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _passwordVisible = !_passwordVisible;
+                            });
+                          },
+                        ),
+                        focusedBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 104, 107, 255),
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 172, 172, 172),
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      obscureText: !_passwordVisible,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                    ),
+                  ),
+                  _error
+                      ? Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            _errorMessage,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 18,
+                            ),
+                          ),
+                        )
+                      : Container(),
+                  const SizedBox(
+                    height: 150,
+                  )
+                ],
               ),
-            ),
-            SizedBox(
-              height: 150,
-            )
-          ],
-        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Container(
-        height: 75,
-        width: 300,
-        margin: const EdgeInsets.all(15),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 104, 107, 255),
-            ),
-            child: const Text(
-              "Đăng nhập",
-              style: TextStyle(
-                fontSize: 30,
+      floatingActionButton: !_isLoading
+          ? Container(
+              height: 75,
+              width: 300,
+              margin: const EdgeInsets.all(15),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 104, 107, 255),
+                  ),
+                  child: const Text(
+                    "Đăng nhập",
+                    style: TextStyle(
+                      fontSize: 30,
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isLoading = !_isLoading;
+                    });
+                    loginRequest();
+                    // debugPrint(
+                    // _usernameController.text + "-" + _passwordController.text);
+                  },
+                ),
               ),
-            ),
-            onPressed: () {},
-          ),
-        ),
-      ),
+            )
+          : Container(),
     );
   }
 }

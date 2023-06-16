@@ -8,6 +8,13 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  late bool _passwordVisible;
+  @override
+  void initState() {
+    super.initState();
+    _passwordVisible = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,15 +37,15 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 "Tạo tài khoản",
                 style: TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              Text(
+              const Text(
                 "Nhập các thông tin dưới",
                 style: TextStyle(
                   fontSize: 25,
@@ -46,10 +53,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Login',
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
                     labelStyle: TextStyle(
                       fontSize: 20,
                     ),
@@ -72,17 +79,27 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
-                child: TextField(
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       fontSize: 20,
                     ),
-                    floatingLabelStyle: TextStyle(
+                    suffixIcon: IconButton(
+                      icon: _passwordVisible
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                    floatingLabelStyle: const TextStyle(
                       color: Color.fromARGB(255, 104, 107, 255),
                     ),
-                    focusedBorder: UnderlineInputBorder(
+                    focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(
                         color: Color.fromARGB(255, 104, 107, 255),
                         width: 2,
@@ -95,20 +112,33 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  obscureText: !_passwordVisible,
+                  autocorrect: false,
+                  enableSuggestions: false,
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
-                child: TextField(
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       fontSize: 20,
                     ),
-                    floatingLabelStyle: TextStyle(
+                    floatingLabelStyle: const TextStyle(
                       color: Color.fromARGB(255, 104, 107, 255),
                     ),
-                    focusedBorder: UnderlineInputBorder(
+                    suffixIcon: IconButton(
+                      icon: _passwordVisible
+                          ? const Icon(Icons.visibility_off)
+                          : const Icon(Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(
                         color: Color.fromARGB(255, 104, 107, 255),
                         width: 2,
@@ -121,12 +151,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  obscureText: !_passwordVisible,
+                  autocorrect: false,
+                  enableSuggestions: false,
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
-                child: TextField(
-                  decoration: InputDecoration(
+                padding: const EdgeInsets.all(10.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     labelStyle: TextStyle(
                       fontSize: 20,
@@ -149,7 +182,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 150,
               )
             ],
