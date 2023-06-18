@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   late bool _isLoading;
   late bool _error;
   late String _errorMessage;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -78,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
+        builder: (context) => const HomeHub(),
       ),
     );
   }
@@ -111,107 +112,122 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Bắt đầu học",
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const Text(
-                    "Đăng nhập tài khoản của bạn",
-                    style: TextStyle(
-                      fontSize: 25,
-                      color: Color.fromARGB(255, 152, 163, 199),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      controller: _usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        labelStyle: TextStyle(
-                          fontSize: 20,
-                        ),
-                        floatingLabelStyle: TextStyle(
-                          color: Color.fromARGB(255, 104, 107, 255),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(255, 104, 107, 255),
-                            width: 2,
-                          ),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(255, 172, 172, 172),
-                            width: 2,
-                          ),
-                        ),
+            : Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Bắt đầu học",
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        labelStyle: const TextStyle(
-                          fontSize: 20,
-                        ),
-                        floatingLabelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 104, 107, 255),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: _passwordVisible
-                              ? const Icon(Icons.visibility_off)
-                              : const Icon(Icons.visibility),
-                          onPressed: () {
-                            setState(() {
-                              _passwordVisible = !_passwordVisible;
-                            });
-                          },
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(255, 104, 107, 255),
-                            width: 2,
-                          ),
-                        ),
-                        enabledBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromARGB(255, 172, 172, 172),
-                            width: 2,
-                          ),
-                        ),
+                    const Text(
+                      "Đăng nhập tài khoản của bạn",
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Color.fromARGB(255, 152, 163, 199),
                       ),
-                      obscureText: !_passwordVisible,
-                      autocorrect: false,
-                      enableSuggestions: false,
                     ),
-                  ),
-                  _error
-                      ? Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Text(
-                            _errorMessage,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 18,
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: TextFormField(
+                        controller: _usernameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          labelStyle: TextStyle(
+                            fontSize: 20,
+                          ),
+                          floatingLabelStyle: TextStyle(
+                            color: Color.fromARGB(255, 104, 107, 255),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 104, 107, 255),
+                              width: 2,
                             ),
                           ),
-                        )
-                      : Container(),
-                  const SizedBox(
-                    height: 150,
-                  )
-                ],
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 172, 172, 172),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          labelStyle: const TextStyle(
+                            fontSize: 20,
+                          ),
+                          floatingLabelStyle: const TextStyle(
+                            color: Color.fromARGB(255, 104, 107, 255),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: _passwordVisible
+                                ? const Icon(Icons.visibility_off)
+                                : const Icon(Icons.visibility),
+                            onPressed: () {
+                              setState(() {
+                                _passwordVisible = !_passwordVisible;
+                              });
+                            },
+                          ),
+                          focusedBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 104, 107, 255),
+                              width: 2,
+                            ),
+                          ),
+                          enabledBorder: const UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 172, 172, 172),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        obscureText: !_passwordVisible,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    _error
+                        ? Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text(
+                              _errorMessage,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 18,
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    const SizedBox(
+                      height: 150,
+                    )
+                  ],
+                ),
               ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -233,10 +249,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   onPressed: () {
-                    setState(() {
-                      _isLoading = !_isLoading;
-                    });
-                    loginRequest();
+                    if (_formKey.currentState!.validate()) {
+                      setState(() {
+                        _isLoading = !_isLoading;
+                      });
+                      loginRequest();
+                    }
                     // debugPrint(
                     // _usernameController.text + "-" + _passwordController.text);
                   },

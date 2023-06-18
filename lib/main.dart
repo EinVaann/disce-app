@@ -1,3 +1,4 @@
+import 'package:disce/screen/home.dart';
 import 'package:disce/screen/landing.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Linotte',
       ),
-      home: const LandingPage(),
+      home: const HomeHub(),
     );
   }
 }
