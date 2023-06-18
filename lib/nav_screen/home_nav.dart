@@ -1,7 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:http/http.dart' as http;
+import 'package:disce/global.dart' as globals;
+
+import '../model/flash_list.dart';
 
 class HomeNav extends StatefulWidget {
   const HomeNav({super.key});
@@ -11,6 +18,168 @@ class HomeNav extends StatefulWidget {
 }
 
 class _HomeNavState extends State<HomeNav> {
+  late List<FlashList> _list;
+  final List<Color> _colorList = [
+    const Color.fromARGB(255, 136, 138, 255),
+    const Color.fromARGB(255, 255, 136, 136),
+    const Color.fromARGB(255, 84, 159, 106),
+    const Color.fromARGB(255, 136, 209, 255),
+  ];
+  late TextEditingController _nameController;
+
+  Future<http.Response> getFlashCard() async {
+    String token = await SessionManager().get('accessToken');
+    // Map<String, String> headers = {
+    //   "Content-type": "application/json; charset=UTF-8"
+    // };
+    Map<String, String> queryParam = {'token': token};
+    final response = await http.get(
+      Uri.https(globals.apiLinks, "/api/v1/flashCard", queryParam),
+      // headers: headers,
+    );
+    // debugPrint(response.body.toString());
+    List<FlashList> tempList = [];
+    for (var i in json.decode(response.body)['cardList']) {
+      tempList.add(FlashList.fromJson(i));
+    }
+    debugPrint(tempList.toString());
+    if (mounted) {
+      setState(() {
+        _list = tempList;
+      });
+    }
+    return response;
+  }
+
+  Future<http.Response> sendCreateRequest() async {
+    String token = await SessionManager().get('accessToken');
+    Map<String, String> headers = {
+      "Content-type": "application/json; charset=UTF-8"
+    };
+    Map<String, String> jsonBody = {"name": _nameController.text};
+    Map<String, String> queryParam = {'token': token};
+    final response = await http.post(
+      Uri.https(globals.apiLinks, "/api/v1/flashCard/create", queryParam),
+      headers: headers,
+      body: jsonEncode(jsonBody),
+    );
+    // debugPrint(response.body.toString());
+    if (response.statusCode == 200) {
+      getFlashCard();
+      showCreateSuccess();
+    }
+    return response;
+  }
+
+  void showCreateSuccess() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Flash Card Created!!',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      _list = [];
+      _nameController = TextEditingController();
+    });
+    getFlashCard();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void showCreate() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text(
+          'Creating Flash Card',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: SizedBox(
+          height: 90,
+          child: Column(
+            children: [
+              const Text(
+                "Enter your card name.",
+                textAlign: TextAlign.center,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                child: TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(8.0),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 104, 107, 255),
+                        width: 2,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 172, 172, 172),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _nameController.text = '';
+            },
+            child: const Text(
+              "Cancel",
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _nameController.text = '';
+              sendCreateRequest();
+            },
+            child: const Text(
+              "Confirm",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -129,9 +298,11 @@ class _HomeNavState extends State<HomeNav> {
                         borderRadius: BorderRadius.all(Radius.circular(20.0)),
                       ),
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showCreate();
+                        },
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: const [
                             Text(
                               "Thẻ mới",
@@ -154,289 +325,104 @@ class _HomeNavState extends State<HomeNav> {
                 ),
               ],
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 136, 138, 255),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "FlashCard",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                  ),
-                                ),
-                                Text(
-                                  "Set 1 Name",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 27,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      right: 20,
-                      child: Container(
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(120, 230, 230, 230),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "30",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 136, 138, 255),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "FlashCard",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                  ),
-                                ),
-                                Text(
-                                  "Set 1 Name",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 27,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      right: 20,
-                      child: Container(
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(120, 230, 230, 230),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "30",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 136, 138, 255),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "FlashCard",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                  ),
-                                ),
-                                Text(
-                                  "Set 1 Name",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 27,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      right: 20,
-                      child: Container(
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(120, 230, 230, 230),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "30",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 136, 138, 255),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "FlashCard",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                  ),
-                                ),
-                                Text(
-                                  "Set 1 Name",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 27,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 20,
-                      right: 20,
-                      child: Container(
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(120, 230, 230, 230),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "30",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
+            //Start Flash Cards from here
+            ..._showFlashCard(),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _showFlashCard() {
+    final children = <Widget>[];
+    if (_list.isEmpty) {
+      children.add(Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            SizedBox(
+              height: 50,
+            ),
+            Text("You don't have any flash card yet. Try create one"),
+          ],
+        ),
+      ));
+    }
+    for (var i = 0; i < _list.length; i++) {
+      children.add(
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Stack(
+              children: [
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: _colorList[i % 4],
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "FlashCard",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25,
+                              ),
+                            ),
+                            Text(
+                              _list[i].name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 27,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: Container(
+                    width: 70,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(120, 230, 230, 230),
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        _list[i].wordList.length.toString(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return children;
   }
 }
