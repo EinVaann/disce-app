@@ -20,7 +20,10 @@ class Word {
         word: json['word'],
         pronunciation: json['pronunciation'],
         meaning: List<WordMeaning>.from(
-            json['meaning'].map((x) => WordMeaning.fromJsonToWordMeaning(x))),
+          json['meaning'].map(
+            (x) => WordMeaning.fromJsonToWordMeaning(x),
+          ),
+        ),
       );
 
   // Map<String, String> toJson() => {

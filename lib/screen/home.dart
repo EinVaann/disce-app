@@ -5,6 +5,8 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+import '../nav_screen/account_nav.dart';
+import '../nav_screen/dict_nav.dart';
 import '../widget/custom_tabbar.dart';
 
 class HomeHub extends StatefulWidget {
@@ -15,23 +17,30 @@ class HomeHub extends StatefulWidget {
 }
 
 class _HomeHubState extends State<HomeHub> with TickerProviderStateMixin {
-  // late TabController _tabController;
   late PageController _pageController;
   int _selectedIndex = 0;
-  // List<int> _showLabel = List.generate(4, (index) => 0);
+  String _searchText = '';
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    setState(() {
+      _searchText = '';
+    });
     // setText();
   }
 
-  // Future<void> setText() async {
-  //   String s = await SessionManager().get('accessToken');
-  //   setState(() {
-  //     text = s;
-  //   });
-  // }
+  void setSelectedTabIndex(int index, dynamic value) {
+    setState(() {
+      _selectedIndex = index;
+      _pageController.animateToPage(index,
+          duration: const Duration(milliseconds: 250), curve: Curves.ease);
+      if (index == 1) {
+        _searchText = value;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +53,7 @@ class _HomeHubState extends State<HomeHub> with TickerProviderStateMixin {
           showElevation: false, // use this to remove appBar's elevation
           onItemSelected: (index) => setState(() {
             _selectedIndex = index;
+            _searchText = '';
             _pageController.animateToPage(index,
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.ease);
@@ -61,6 +71,12 @@ class _HomeHubState extends State<HomeHub> with TickerProviderStateMixin {
               activeColor: const Color.fromARGB(255, 104, 107, 255),
               inactiveColor: const Color.fromARGB(255, 92, 101, 124),
             ),
+            // ATabItem(
+            //   icon: const Icon(Icons.camera),
+            //   title: const Text('Camera'),
+            //   activeColor: const Color.fromARGB(255, 104, 107, 255),
+            //   inactiveColor: const Color.fromARGB(255, 92, 101, 124),
+            // ),
             ATabItem(
               icon: const Icon(Icons.message),
               title: const Text('Messages'),
@@ -82,22 +98,23 @@ class _HomeHubState extends State<HomeHub> with TickerProviderStateMixin {
           physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           children: [
-            const HomeNav(),
+            HomeNav(
+              goToPage: setSelectedTabIndex,
+            ),
+            DictNav(
+              searchText: _searchText,
+            ),
+            // Center(
+            //     child: Text(
+            //   _selectedIndex.toString(),
+            //   style: const TextStyle(fontSize: 40),
+            // )),
             Center(
                 child: Text(
               _selectedIndex.toString(),
               style: const TextStyle(fontSize: 40),
             )),
-            Center(
-                child: Text(
-              _selectedIndex.toString(),
-              style: const TextStyle(fontSize: 40),
-            )),
-            Center(
-                child: Text(
-              _selectedIndex.toString(),
-              style: const TextStyle(fontSize: 40),
-            )),
+            const AccountNav(),
           ],
         ),
       ),

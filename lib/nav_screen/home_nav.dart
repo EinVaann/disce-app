@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:disce/screen/flash_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -7,11 +9,13 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:disce/global.dart' as globals;
+import 'package:loading_indicator/loading_indicator.dart';
 
 import '../model/flash_list.dart';
 
 class HomeNav extends StatefulWidget {
-  const HomeNav({super.key});
+  final Function goToPage;
+  const HomeNav({super.key, required this.goToPage});
 
   @override
   State<HomeNav> createState() => _HomeNavState();
@@ -19,6 +23,8 @@ class HomeNav extends StatefulWidget {
 
 class _HomeNavState extends State<HomeNav> {
   late List<FlashList> _list;
+  late TextEditingController _searchController;
+  bool _isLoading = false;
   final List<Color> _colorList = [
     const Color.fromARGB(255, 136, 138, 255),
     const Color.fromARGB(255, 255, 136, 136),
@@ -28,6 +34,9 @@ class _HomeNavState extends State<HomeNav> {
   late TextEditingController _nameController;
 
   Future<http.Response> getFlashCard() async {
+    setState(() {
+      _isLoading = true;
+    });
     String token = await SessionManager().get('accessToken');
     // Map<String, String> headers = {
     //   "Content-type": "application/json; charset=UTF-8"
@@ -46,9 +55,14 @@ class _HomeNavState extends State<HomeNav> {
     if (mounted) {
       setState(() {
         _list = tempList;
+        _isLoading = false;
       });
     }
     return response;
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    getFlashCard();
   }
 
   Future<http.Response> sendCreateRequest() async {
@@ -68,6 +82,7 @@ class _HomeNavState extends State<HomeNav> {
       getFlashCard();
       showCreateSuccess();
     }
+    _nameController.text = '';
     return response;
   }
 
@@ -91,17 +106,18 @@ class _HomeNavState extends State<HomeNav> {
   @override
   void initState() {
     super.initState();
-
+    getFlashCard();
     setState(() {
       _list = [];
       _nameController = TextEditingController();
+      _searchController = TextEditingController();
     });
-    getFlashCard();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -165,7 +181,6 @@ class _HomeNavState extends State<HomeNav> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _nameController.text = '';
               sendCreateRequest();
             },
             child: const Text(
@@ -190,6 +205,12 @@ class _HomeNavState extends State<HomeNav> {
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
                 child: TextFormField(
+                  controller: _searchController,
+                  onFieldSubmitted: (text) {
+                    if (text != '') {
+                      widget.goToPage(1, text);
+                    }
+                  },
                   decoration: InputDecoration(
                     hintText: "Tìm kiếm từ vựng",
                     contentPadding: const EdgeInsets.all(8.0),
@@ -197,7 +218,10 @@ class _HomeNavState extends State<HomeNav> {
                       height: 40,
                       child: InkWell(
                         onTap: () {
-                          setState(() {});
+                          if (_searchController.text != '') {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            widget.goToPage(1, _searchController.text);
+                          }
                         },
                         child: const Icon(
                           Icons.search,
@@ -335,6 +359,22 @@ class _HomeNavState extends State<HomeNav> {
 
   List<Widget> _showFlashCard() {
     final children = <Widget>[];
+    if (_isLoading) {
+      children.add(const SizedBox(
+        height: 200,
+        child: Center(
+          child: SizedBox(
+            height: 50,
+            child: LoadingIndicator(
+              indicatorType: Indicator.circleStrokeSpin,
+              colors: [Color.fromARGB(255, 104, 107, 255)],
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+      ));
+      return children;
+    }
     if (_list.isEmpty) {
       children.add(Center(
         child: Column(
@@ -366,7 +406,17 @@ class _HomeNavState extends State<HomeNav> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FlashCardScreen(
+                              flashCardId: _list[i].id,
+                              appBarColor: _colorList[i % 4],
+                            ),
+                          ),
+                        ).then(onGoBack);
+                      },
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Column(
