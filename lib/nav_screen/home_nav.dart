@@ -413,6 +413,7 @@ class _HomeNavState extends State<HomeNav> {
                             builder: (context) => FlashCardScreen(
                               flashCardId: _list[i].id,
                               appBarColor: _colorList[i % 4],
+                              goToPage: widget.goToPage,
                             ),
                           ),
                         ).then(onGoBack);

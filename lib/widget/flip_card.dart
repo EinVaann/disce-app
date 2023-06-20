@@ -8,10 +8,12 @@ import '../model/word.dart';
 class FlipCard extends StatefulWidget {
   final Word word;
   final AnimationController controller;
+  final Function goToPage;
   const FlipCard({
     super.key,
     required this.word,
     required this.controller,
+    required this.goToPage,
   });
 
   @override
@@ -44,6 +46,11 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
         } else {
           widget.controller.reverse();
         }
+      },
+      onLongPress: () {
+        debugPrint("new");
+        Navigator.of(context).pop();
+        widget.goToPage(1, widget.word.word);
       },
       child: Transform(
         alignment: FractionalOffset.center,
@@ -162,21 +169,36 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.word.meaning[0].wordType.capitalize(),
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 152, 163, 199),
-                          fontSize: 20,
-                          // fontWeight: FontWeight.bold,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.word.meaning[0].wordType.capitalize(),
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 152, 163, 199),
+                              fontSize: 20,
+                              // fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '• ${widget.word.meaning[0].meaning.capitalize()}',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 4,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '• ${widget.word.meaning[0].meaning.capitalize()}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                      const Text(
+                        'Hold for more.',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 152, 163, 199),
+                          fontSize: 15,
                         ),
                       ),
                     ],

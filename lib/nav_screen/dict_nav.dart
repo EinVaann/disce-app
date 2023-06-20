@@ -156,6 +156,15 @@ class _DictNavState extends State<DictNav> {
     return response;
   }
 
+  bool checkAlreadyIn(List<String> wordList) {
+    for (var i in wordList) {
+      if (i == _exactWord.id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void showAddOption() {
     showGeneralDialog(
       barrierLabel: "Label",
@@ -208,22 +217,31 @@ class _DictNavState extends State<DictNav> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                        child: Icon(Icons.filter_none_sharp),
+                                      Row(
+                                        children: [
+                                          const Padding(
+                                            padding:
+                                                EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                            child:
+                                                Icon(Icons.filter_none_sharp),
+                                          ),
+                                          Text(
+                                            i.name,
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.normal,
+                                              fontFamily: 'Linotte',
+                                              decoration: TextDecoration.none,
+                                              fontSize: 22,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        i.name,
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.normal,
-                                          fontFamily: 'Linotte',
-                                          decoration: TextDecoration.none,
-                                          fontSize: 22,
-                                        ),
-                                      ),
+                                      if (checkAlreadyIn(i.wordList))
+                                        const Icon(Icons.download_done_rounded)
                                     ],
                                   ),
                                 ),

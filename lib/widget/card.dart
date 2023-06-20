@@ -9,11 +9,13 @@ class CardWidget extends StatefulWidget {
   final Word word;
   final bool isFront;
   final Function changeOrder;
+  final Function goToPage;
   const CardWidget({
     super.key,
     required this.word,
     required this.isFront,
     required this.changeOrder,
+    required this.goToPage,
   });
 
   @override
@@ -97,6 +99,7 @@ class _CardWidgetState extends State<CardWidget> with TickerProviderStateMixin {
             child: FlipCard(
               word: widget.word,
               controller: _controller,
+              goToPage: widget.goToPage,
             ),
           );
         }),

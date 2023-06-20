@@ -17,10 +17,12 @@ import '../model/word.dart';
 class FlashCardScreen extends StatefulWidget {
   final String flashCardId;
   final Color appBarColor;
+  final Function goToPage;
   const FlashCardScreen({
     super.key,
     required this.flashCardId,
     required this.appBarColor,
+    required this.goToPage,
   });
 
   @override
@@ -575,6 +577,7 @@ class _FlashCardScreenState extends State<FlashCardScreen>
           word: wordList[i],
           isFront: i == wordList.length - 1,
           changeOrder: putTopToBottom,
+          goToPage: widget.goToPage,
         ),
       );
     }
