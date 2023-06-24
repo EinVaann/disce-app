@@ -51,12 +51,10 @@ class _LoginPageState extends State<LoginPage> {
       'username': _usernameController.text,
       'password': _passwordController.text,
     };
-    debugPrint(globals.apiLinks);
     final response = await http.post(
         Uri.https(globals.apiLinks, "/api/v1/users/login"),
         headers: headers,
         body: jsonEncode(jsonBody));
-    debugPrint(response.statusCode.toString());
     if (response.statusCode == 200) {
       setState(() {
         _isLoading = !_isLoading;
@@ -73,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
         _errorMessage = json.decode(response.body)['message'];
       });
     }
-    debugPrint(response.body);
     return response;
   }
 
@@ -260,8 +257,6 @@ class _LoginPageState extends State<LoginPage> {
                       });
                       loginRequest();
                     }
-                    // debugPrint(
-                    // _usernameController.text + "-" + _passwordController.text);
                   },
                 ),
               ),

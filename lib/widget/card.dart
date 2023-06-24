@@ -106,7 +106,7 @@ class _CardWidgetState extends State<CardWidget> with TickerProviderStateMixin {
       );
 
   Widget buildCard() => Container(
-        height: 250,
+        height: 300,
         width: 250,
         decoration: BoxDecoration(
           // color: Colors.blueAccent,

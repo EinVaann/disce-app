@@ -1,17 +1,7 @@
-import 'dart:convert';
-import 'dart:ui';
-
-import 'package:disce/widget/card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:http/http.dart' as http;
-import 'package:disce/global.dart' as globals;
 import 'package:loading_indicator/loading_indicator.dart';
 
 import '../model/flash_card.dart';
-import '../model/word.dart';
 
 class WordListScreen extends StatefulWidget {
   final FlashCard flashCard;

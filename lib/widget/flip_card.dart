@@ -48,7 +48,6 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
         }
       },
       onLongPress: () {
-        debugPrint("new");
         Navigator.of(context).pop();
         widget.goToPage(1, widget.word.word);
       },
@@ -63,7 +62,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
   }
 
   Widget buildCard() => Container(
-        height: 250,
+        height: 300,
         width: 250,
         decoration: BoxDecoration(
           // color: Colors.blueAccent,
@@ -101,7 +100,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
           ..setEntry(2, 1, 0.0015)
           ..rotateY(3.14),
         child: Container(
-          height: 250,
+          height: 300,
           width: 250,
           decoration: BoxDecoration(
             // color: Colors.blueAccent,
@@ -157,7 +156,7 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                 ),
               ),
               Container(
-                height: 199,
+                height: 249,
                 width: 250,
                 decoration: const BoxDecoration(
                   color: Colors.white,

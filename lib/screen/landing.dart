@@ -27,7 +27,6 @@ class _LandingPageState extends State<LandingPage> {
             const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () {
-                debugPrint("to Login");
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -69,7 +68,6 @@ class _LandingPageState extends State<LandingPage> {
             const SizedBox(height: 50),
             OutlinedButton(
               onPressed: () {
-                debugPrint("to signup");
                 Navigator.push(
                   context,
                   MaterialPageRoute(

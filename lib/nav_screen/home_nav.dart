@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:disce/screen/flash_card.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:disce/global.dart' as globals;
@@ -46,12 +43,10 @@ class _HomeNavState extends State<HomeNav> {
       Uri.https(globals.apiLinks, "/api/v1/flashCard", queryParam),
       // headers: headers,
     );
-    // debugPrint(response.body.toString());
     List<FlashList> tempList = [];
     for (var i in json.decode(response.body)['cardList']) {
       tempList.add(FlashList.fromJson(i));
     }
-    debugPrint(tempList.toString());
     if (mounted) {
       setState(() {
         _list = tempList;
@@ -77,7 +72,6 @@ class _HomeNavState extends State<HomeNav> {
       headers: headers,
       body: jsonEncode(jsonBody),
     );
-    // debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       getFlashCard();
       showCreateSuccess();

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -66,7 +67,6 @@ class _DictNavState extends State<DictNav> {
       headers: headers,
       body: jsonEncode(jsonBody),
     );
-    debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       showAddSuccess();
     }
@@ -140,7 +140,7 @@ class _DictNavState extends State<DictNav> {
             _exactWord = tempList[0];
             if (!_recentWord.contains(tempList[0].word)) {
               if (_recentWord.isNotEmpty && _recentWord.length == 10) {
-                _recentWord.remove(recentWord.last);
+                _recentWord.remove(_recentWord.last);
               }
               _recentWord.add(tempList[0].word);
             }
@@ -304,7 +304,7 @@ class _DictNavState extends State<DictNav> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
                 child: SizedBox(
                   child: TextFormField(
                     controller: _searchController,
@@ -360,7 +360,7 @@ class _DictNavState extends State<DictNav> {
                         )
                       : _foundExact
                           ? Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -370,7 +370,7 @@ class _DictNavState extends State<DictNav> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Row(
+                                        Column(
                                           children: [
                                             Text(
                                               _list[0].word.capitalize(),
@@ -387,13 +387,24 @@ class _DictNavState extends State<DictNav> {
                                               style: const TextStyle(
                                                 fontSize: 20,
                                                 // fontWeight: FontWeight.bold,
+                                                fontFamily: 'none',
                                               ),
                                             ),
                                           ],
                                         ),
                                         Row(
                                           children: [
-                                            const Icon(Icons.volume_up),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: IconButton(
+                                                icon:
+                                                    const Icon(Icons.volume_up),
+                                                onPressed: () {
+                                                  playAudio();
+                                                },
+                                              ),
+                                            ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.fromLTRB(
@@ -625,6 +636,12 @@ class _DictNavState extends State<DictNav> {
       }
     }
     return children;
+  }
+
+  void playAudio() async {
+    final player = AudioPlayer();
+    await player.play(UrlSource(
+        "https://${globals.apiLinks}/api/v1/words/hear?text=${_exactWord.word}"));
   }
 }
 

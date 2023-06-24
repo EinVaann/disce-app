@@ -57,12 +57,10 @@ class _SignUpPageState extends State<SignUpPage> {
       'password': _passwordController.text,
       'email': _emailController.text,
     };
-    debugPrint(globals.apiLinks);
     final response = await http.post(
         Uri.https(globals.apiLinks, "/api/v1/users/register"),
         headers: headers,
         body: jsonEncode(jsonBody));
-    debugPrint(response.statusCode.toString());
     if (response.statusCode == 200) {
       setState(() {
         _isLoading = !_isLoading;
@@ -79,7 +77,6 @@ class _SignUpPageState extends State<SignUpPage> {
         _errorMessage = json.decode(response.body)['message'];
       });
     }
-    debugPrint(response.body);
     return response;
   }
 

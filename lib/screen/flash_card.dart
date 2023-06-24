@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:disce/screen/quiz.dart';
 import 'package:disce/screen/word_list.dart';
 import 'package:disce/widget/card.dart';
 import 'package:flutter/material.dart';
@@ -60,13 +61,11 @@ class _FlashCardScreenState extends State<FlashCardScreen>
     final response = await http.get(
       Uri.https(globals.apiLinks, "/api/v1/flashCard/get", queryParam),
     );
-    // debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       setState(() {
         _flashCard = FlashCard.fromJson(jsonDecode(response.body)['flashCard']);
         _isLoading = false;
       });
-      debugPrint(_flashCard.name.toString());
     }
     return response;
   }
@@ -83,7 +82,6 @@ class _FlashCardScreenState extends State<FlashCardScreen>
     final response = await http.delete(
       Uri.https(globals.apiLinks, "/api/v1/flashCard/delete", queryParam),
     );
-    // debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       goBack();
       showSnackBar('Xoá FlashCard thành công.');
@@ -113,7 +111,6 @@ class _FlashCardScreenState extends State<FlashCardScreen>
       headers: headers,
       body: jsonEncode(jsonBody),
     );
-    // debugPrint(response.body.toString());
     if (response.statusCode == 200) {
       getFlashCard();
       showSnackBar('Editing Success');
@@ -322,8 +319,12 @@ class _FlashCardScreenState extends State<FlashCardScreen>
                     ),
                     TextButton(
                       onPressed: () {
-                        // Navigator.of(context, rootNavigator: true).pop();
-                        // showDeleteConfirmation();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => QuizScreen(
+                                      flashCardId: _flashCard.id,
+                                    )));
                       },
                       child: const SizedBox(
                         width: double.infinity,
@@ -552,15 +553,22 @@ class _FlashCardScreenState extends State<FlashCardScreen>
             ),
           ),
         ),
-        body: Center(
-          child: SizedBox(
-            // width: MediaQuery.of(context).size.width / 3 * 2,
-            height: 300,
-            child: Stack(
-              children: [
-                ...stackOfCard(),
-              ],
-            ),
+        body: SizedBox.expand(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 300,
+                child: Stack(
+                  children: [
+                    ...stackOfCard(),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 70,
+              )
+            ],
           ),
         ),
       );
@@ -571,7 +579,6 @@ class _FlashCardScreenState extends State<FlashCardScreen>
     List<Widget> children = [];
     List<Word> wordList = _flashCard.wordList.reversed.toList();
     for (var i = 0; i < wordList.length; i++) {
-      // debugPrint('in${wordList[i].word}');
       children.add(
         CardWidget(
           word: wordList[i],
@@ -589,9 +596,6 @@ class _FlashCardScreenState extends State<FlashCardScreen>
     Word firstWord = wordList.first;
     wordList.remove(firstWord);
     wordList.add(firstWord);
-    // for (var i in wordList) {
-    //   debugPrint('replace${i.word}');
-    // }
     setState(() {
       _flashCard.wordList = wordList;
     });
