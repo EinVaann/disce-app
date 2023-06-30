@@ -34,6 +34,7 @@ class _DictNavState extends State<DictNav> {
   bool _found = false;
   late Word _exactWord;
   late List<String> _recentWord = [];
+
   Future<http.Response> getFlashCard() async {
     String token = await SessionManager().get('accessToken');
     Map<String, String> queryParam = {'token': token};
@@ -90,8 +91,7 @@ class _DictNavState extends State<DictNav> {
     );
   }
 
-  Future<http.Response> getWord() async {
-    String token = await SessionManager().get('accessToken');
+  Future<void> getRecent() async {
     dynamic recentWord = await SessionManager().get('recentWord');
     List<String> tempRecent = [];
     if (recentWord != null) {
@@ -116,9 +116,12 @@ class _DictNavState extends State<DictNav> {
       _foundExact = false;
       _recentWord = tempRecent2.isNotEmpty ? tempRecent2 : [];
     });
-    // Map<String, String> headers = {
-    //   "Content-type": "application/json; charset=UTF-8"
-    // };
+  }
+
+  Future<http.Response> getWord() async {
+    getRecent();
+    String token = await SessionManager().get('accessToken');
+
     Map<String, String> queryParam = {
       'token': token,
       'search_query': _searchController.text
@@ -287,7 +290,10 @@ class _DictNavState extends State<DictNav> {
       _foundExact = false;
     });
     getFlashCard();
-    getWord();
+    getRecent();
+    if (_searchController.text != '') {
+      getWord();
+    }
   }
 
   @override
@@ -309,7 +315,9 @@ class _DictNavState extends State<DictNav> {
                   child: TextFormField(
                     controller: _searchController,
                     onFieldSubmitted: (text) {
-                      getWord();
+                      if (text != '') {
+                        getWord();
+                      }
                     },
                     decoration: InputDecoration(
                       hintText: "Tìm kiếm từ vựng",
@@ -319,7 +327,9 @@ class _DictNavState extends State<DictNav> {
                         child: InkWell(
                           onTap: () {
                             FocusManager.instance.primaryFocus?.unfocus();
-                            getWord();
+                            if (_searchController.text != '') {
+                              getWord();
+                            }
                           },
                           child: const Icon(
                             Icons.search,
@@ -414,7 +424,10 @@ class _DictNavState extends State<DictNav> {
                                                 onPressed: () {
                                                   setState(() {
                                                     _searchController.text = '';
-                                                    getWord();
+                                                    _isSearching = false;
+                                                    _isLoading = false;
+                                                    _found = false;
+                                                    _foundExact = false;
                                                   });
                                                 },
                                               ),

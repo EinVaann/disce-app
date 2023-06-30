@@ -1,7 +1,6 @@
 import 'package:disce/nav_screen/chat_nav.dart';
 import 'package:disce/nav_screen/home_nav.dart';
 import 'package:flutter/material.dart';
-
 import '../nav_screen/account_nav.dart';
 import '../nav_screen/dict_nav.dart';
 import '../widget/custom_tabbar.dart';
@@ -106,7 +105,7 @@ class _HomeHubState extends State<HomeHub> with TickerProviderStateMixin {
             //   _selectedIndex.toString(),
             //   style: const TextStyle(fontSize: 40),
             // )),
-            const ChatNav(),
+            ChatNav(),
             const AccountNav(),
           ],
         ),
