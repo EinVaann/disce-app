@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:disce/screen/flash_card.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:disce/global.dart' as globals;
 import 'package:loading_indicator/loading_indicator.dart';
 
 import '../model/flash_list.dart';
+import '../screen/quiz.dart';
 
 class HomeNav extends StatefulWidget {
   final Function goToPage;
@@ -78,6 +80,48 @@ class _HomeNavState extends State<HomeNav> {
     }
     _nameController.text = '';
     return response;
+  }
+
+  void startQuickQuiz() {
+    List<FlashList> temp = [];
+    for (var i in _list) {
+      if (i.wordList.length >= 10) {
+        temp.add(i);
+      }
+    }
+    if (temp.isNotEmpty) {
+      var randomIndex = Random().nextInt(temp.length);
+      String selectedFlashId = temp[randomIndex].id;
+      goToQuiz(selectedFlashId);
+    } else {
+      showSnackBar("Không có FlashCard nào đủ từ để kiểm tra");
+    }
+  }
+
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      ),
+    );
+  }
+
+  void goToQuiz(String flashCardId) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => QuizScreen(
+                  flashCardId: flashCardId,
+                )));
   }
 
   void showCreateSuccess() {
@@ -243,8 +287,6 @@ class _HomeNavState extends State<HomeNav> {
               height: 10,
             ),
             Row(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 2,
@@ -258,7 +300,9 @@ class _HomeNavState extends State<HomeNav> {
                         ),
                       ),
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          startQuickQuiz();
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromARGB(255, 251, 241, 227),

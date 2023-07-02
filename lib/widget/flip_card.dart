@@ -8,12 +8,14 @@ import '../model/word.dart';
 class FlipCard extends StatefulWidget {
   final Word word;
   final AnimationController controller;
+  final bool enable;
   final Function goToPage;
   const FlipCard({
     super.key,
     required this.word,
     required this.controller,
     required this.goToPage,
+    required this.enable,
   });
 
   @override
@@ -48,8 +50,10 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
         }
       },
       onLongPress: () {
-        Navigator.of(context).pop();
-        widget.goToPage(1, widget.word.word);
+        if (widget.enable) {
+          Navigator.of(context).pop();
+          widget.goToPage(1, widget.word.word);
+        }
       },
       child: Transform(
         alignment: FractionalOffset.center,
@@ -193,13 +197,15 @@ class _FlipCardState extends State<FlipCard> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      const Text(
-                        'Hold for more.',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 152, 163, 199),
-                          fontSize: 15,
-                        ),
-                      ),
+                      widget.enable
+                          ? const Text(
+                              'Hold for more.',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 152, 163, 199),
+                                fontSize: 15,
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),

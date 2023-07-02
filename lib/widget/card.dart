@@ -8,6 +8,7 @@ import 'flip_card.dart';
 class CardWidget extends StatefulWidget {
   final Word word;
   final bool isFront;
+  final bool enable;
   final Function changeOrder;
   final Function goToPage;
   const CardWidget({
@@ -16,6 +17,7 @@ class CardWidget extends StatefulWidget {
     required this.isFront,
     required this.changeOrder,
     required this.goToPage,
+    required this.enable,
   });
 
   @override
@@ -97,6 +99,7 @@ class _CardWidgetState extends State<CardWidget> with TickerProviderStateMixin {
                 _position.dy,
               ),
             child: FlipCard(
+              enable: widget.enable,
               word: widget.word,
               controller: _controller,
               goToPage: widget.goToPage,

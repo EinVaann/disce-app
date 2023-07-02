@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 
@@ -118,6 +119,12 @@ class _FlashCardScreenState extends State<FlashCardScreen>
       showSnackBar('Error');
     }
     return response;
+  }
+
+  FutureOr onGoBack(dynamic value) {
+    if (value == "edited") {
+      getFlashCard();
+    }
   }
 
   void goBack() {
@@ -298,7 +305,7 @@ class _FlashCardScreenState extends State<FlashCardScreen>
                               flashCard: _flashCard,
                             ),
                           ),
-                        );
+                        ).then(onGoBack);
                       },
                       child: const SizedBox(
                         width: double.infinity,
@@ -581,6 +588,7 @@ class _FlashCardScreenState extends State<FlashCardScreen>
     for (var i = 0; i < wordList.length; i++) {
       children.add(
         CardWidget(
+          enable: true,
           word: wordList[i],
           isFront: i == wordList.length - 1,
           changeOrder: putTopToBottom,

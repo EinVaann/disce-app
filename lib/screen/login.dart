@@ -29,8 +29,6 @@ class _LoginPageState extends State<LoginPage> {
     _passwordVisible = false;
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
-    _usernameController.text = 'user001';
-    _passwordController.text = '123456';
     _isLoading = false;
     _error = false;
     _errorMessage = "None";

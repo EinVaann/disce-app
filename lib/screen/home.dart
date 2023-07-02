@@ -105,7 +105,7 @@ class _HomeHubState extends State<HomeHub> with TickerProviderStateMixin {
             //   _selectedIndex.toString(),
             //   style: const TextStyle(fontSize: 40),
             // )),
-            ChatNav(),
+            const ChatNav(),
             const AccountNav(),
           ],
         ),
