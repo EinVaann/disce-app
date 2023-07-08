@@ -32,6 +32,7 @@ class _DictNavState extends State<DictNav> {
   bool _foundExact = false;
   bool _isSearching = false;
   bool _found = false;
+  bool _audio = false;
   late Word _exactWord;
   late List<String> _recentWord = [];
 
@@ -411,7 +412,10 @@ class _DictNavState extends State<DictNav> {
                                                 icon:
                                                     const Icon(Icons.volume_up),
                                                 onPressed: () {
-                                                  playAudio();
+                                                  debugPrint("playAudio");
+                                                  if (!_audio) {
+                                                    playAudio();
+                                                  }
                                                 },
                                               ),
                                             ),
@@ -652,9 +656,15 @@ class _DictNavState extends State<DictNav> {
   }
 
   void playAudio() async {
+    setState(() {
+      _audio = true;
+    });
     final player = AudioPlayer();
     await player.play(UrlSource(
         "https://${globals.apiLinks}/api/v1/words/hear?text=${_exactWord.word}"));
+    setState(() {
+      _audio = false;
+    });
   }
 }
 
