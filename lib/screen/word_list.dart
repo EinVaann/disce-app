@@ -192,7 +192,7 @@ class _WordListScreenState extends State<WordListScreen>
     });
     List<String> words = _listTextController.text.split(',');
     for (var i = 0; i < words.length; i++) {
-      words[i] = words[i].toLowerCase();
+      words[i] = words[i].toLowerCase().trim();
     }
     String token = await SessionManager().get('accessToken');
     Map<String, String> headers = {
