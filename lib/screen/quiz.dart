@@ -98,8 +98,10 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     setState(() {
-      _animatedBar = 370;
       _answerIndexs = List.generate(10, (index) => 0);
+      Future.delayed(Duration.zero, () {
+        _animatedBar = MediaQuery.of(context).size.width - 50;
+      });
     });
     getFlashCard();
   }
@@ -174,7 +176,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     padding: const EdgeInsets.fromLTRB(10, 30, 10, 10),
                     child: Container(
                       height: 20,
-                      width: 400,
+                      width: MediaQuery.of(context).size.width - 20,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.black, width: 2),
                         borderRadius: const BorderRadius.all(
@@ -203,10 +205,16 @@ class _QuizScreenState extends State<QuizScreen> {
                   Column(
                     children: [
                       CustomPaint(
-                        painter: OpenPainter(),
+                        painter: OpenPainter(
+                          mx: MediaQuery.of(context).size.width,
+                          my: MediaQuery.of(context).size.height,
+                        ),
                       ),
                       CustomPaint(
-                        painter: OpenPainter(),
+                        painter: OpenPainter(
+                          mx: MediaQuery.of(context).size.width,
+                          my: MediaQuery.of(context).size.height,
+                        ),
                       )
                     ],
                   ),
@@ -296,16 +304,20 @@ class _QuizScreenState extends State<QuizScreen> {
 }
 
 class OpenPainter extends CustomPainter {
+  final double mx;
+  final double my;
+
+  OpenPainter({required this.mx, required this.my});
   @override
   void paint(Canvas canvas, Size size) {
     var paint1 = Paint()
       ..color = const Color.fromARGB(255, 136, 138, 255)
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(const Offset(200, 180), 50, paint1);
+    canvas.drawCircle(Offset(mx / 2, my / 2 + 150), 50, paint1);
     var paint2 = Paint()
       ..color = const Color.fromARGB(255, 136, 138, 255)
       ..style = PaintingStyle.fill;
-    canvas.drawCircle(const Offset(200, 540), 50, paint2);
+    canvas.drawCircle(Offset(mx / 2, my / 2 - 250), 50, paint2);
   }
 
   @override
