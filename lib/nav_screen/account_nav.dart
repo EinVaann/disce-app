@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:disce/screen/landing.dart';
+import 'package:disce/screen/progress_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -108,84 +109,11 @@ class _AccountNavState extends State<AccountNav> {
   }
 
   void showProgress() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text(
-          'Your Progress',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: SizedBox(
-          height: 400,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                for (var i in _testResults)
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context, rootNavigator: true).pop();
-                      //
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-                                child: Icon(
-                                  Icons.text_snippet,
-                                  size: 40,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              SizedBox(
-                                width: 150,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      i['date'].toString().substring(0, 10),
-                                      style: const TextStyle(
-                                        color: Colors.blueAccent,
-                                        fontWeight: FontWeight.normal,
-                                        fontFamily: 'Linotte',
-                                        decoration: TextDecoration.none,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Result: ${i['result']}/10',
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.normal,
-                                        fontFamily: 'Linotte',
-                                        decoration: TextDecoration.none,
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProgressScreen(
+          testsResult: _testResults,
         ),
       ),
     );
@@ -199,7 +127,7 @@ class _AccountNavState extends State<AccountNav> {
           return StatefulBuilder(builder: (context, setState) {
             return AlertDialog(
               title: const Text(
-                'Change Password',
+                'Đổi mật khẩu',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -213,7 +141,7 @@ class _AccountNavState extends State<AccountNav> {
                       TextFormField(
                         controller: _passController,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: 'Mật khẩu',
                           labelStyle: const TextStyle(
                             fontSize: 20,
                           ),
@@ -249,7 +177,7 @@ class _AccountNavState extends State<AccountNav> {
                       TextFormField(
                         controller: _confirmPassController,
                         decoration: InputDecoration(
-                          labelText: 'Confirm Password',
+                          labelText: 'Xác nhận mật khẩu',
                           labelStyle: const TextStyle(
                             fontSize: 20,
                           ),
@@ -285,7 +213,7 @@ class _AccountNavState extends State<AccountNav> {
                       TextFormField(
                         controller: _newPassController,
                         decoration: InputDecoration(
-                          labelText: 'New Password',
+                          labelText: 'Mật khẩu mới',
                           labelStyle: const TextStyle(
                             fontSize: 20,
                           ),
@@ -346,7 +274,8 @@ class _AccountNavState extends State<AccountNav> {
                       Navigator.of(context).pop();
                       sendChangePass();
                     } else {
-                      showSnackBar("Confirm password does not match");
+                      showSnackBar(
+                          "Xác nhận mật khẩu không giống với mật khẩu");
                     }
                   },
                   child: const Text(
@@ -417,206 +346,209 @@ class _AccountNavState extends State<AccountNav> {
               ),
             )
           : SizedBox.expand(
-              child: SingleChildScrollView(
-                reverse: true,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Progress",
-                      style: TextStyle(fontSize: 30),
-                    ),
-                    SizedBox(
-                      width: 300,
-                      height: 400,
-                      child: TableCalendar(
-                        firstDay:
-                            DateTime.utc(date['year'], date['month'] - 1, 1),
-                        lastDay: DateTime.utc(
-                            date['year'], date['month'], date['maxDate']),
-                        focusedDay: DateTime.now(),
-                        availableCalendarFormats: const {
-                          CalendarFormat.month: 'Month'
-                        },
-                        daysOfWeekVisible: false,
-                        headerStyle: const HeaderStyle(
-                          leftChevronVisible: false,
-                          rightChevronVisible: false,
-                          headerPadding: EdgeInsets.symmetric(
-                              horizontal: 20.0, vertical: 10.0),
-                          formatButtonVisible: false,
-                        ),
-                        calendarBuilders: CalendarBuilders(
-                          defaultBuilder: (context, day, focusedDay) {
-                            for (DateTime d in _highLightDate) {
-                              if (day.day == d.day &&
-                                  day.month == d.month &&
-                                  day.year == d.year) {
-                                return Container(
-                                  decoration: const BoxDecoration(
-                                    color: Colors.lightGreen,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(8.0),
-                                    ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Text(
+                    "Quá trình",
+                    style: TextStyle(fontSize: 30),
+                  ),
+                  SizedBox(
+                    width: 300,
+                    height: 400,
+                    child: TableCalendar(
+                      firstDay:
+                          DateTime.utc(date['year'], date['month'] - 1, 1),
+                      lastDay: DateTime.utc(
+                          date['year'], date['month'], date['maxDate']),
+                      focusedDay: DateTime.now(),
+                      availableCalendarFormats: const {
+                        CalendarFormat.month: 'Month'
+                      },
+                      daysOfWeekVisible: false,
+                      headerStyle: const HeaderStyle(
+                        leftChevronVisible: false,
+                        rightChevronVisible: false,
+                        headerPadding: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        formatButtonVisible: false,
+                      ),
+                      calendarBuilders: CalendarBuilders(
+                        defaultBuilder: (context, day, focusedDay) {
+                          for (DateTime d in _highLightDate) {
+                            if (day.day == d.day &&
+                                day.month == d.month &&
+                                day.year == d.year) {
+                              return Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.lightGreen,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      '${day.day}',
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '${day.day}',
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                );
-                              }
+                                ),
+                              );
                             }
-                            return null;
-                          },
-                        ),
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    const Divider(
-                      thickness: 2,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 236, 236, 236),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: TextButton(
-                          onPressed: () {
-                            showProgress();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: const [
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      "See Progress",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+                  ),
+                  const Divider(
+                    thickness: 2,
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 236, 236, 236),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: TextButton(
+                            onPressed: () {
+                              showProgress();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: const [
+                                      SizedBox(
+                                        width: 10,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: Colors.black,
-                                )
-                              ],
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Xem kết quả kiểm tra",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: Colors.black,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 236, 236, 236),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: TextButton(
-                          onPressed: () {
-                            showChangePass();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: const [
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      "Change Password",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 236, 236, 236),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: TextButton(
+                            onPressed: () {
+                              showChangePass();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: const [
+                                      SizedBox(
+                                        width: 10,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: Colors.black,
-                                )
-                              ],
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Đổi mật khẩu",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: Colors.black,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 255, 69, 69),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: TextButton(
-                          onPressed: () {
-                            logOut();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: const [
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      "Log Out",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 255, 69, 69),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: TextButton(
+                            onPressed: () {
+                              logOut();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: const [
+                                      SizedBox(
+                                        width: 10,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: Colors.black,
-                                )
-                              ],
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Đăng xuất",
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: Colors.black,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
     );

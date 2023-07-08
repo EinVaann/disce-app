@@ -116,7 +116,7 @@ class _WordListScreenState extends State<WordListScreen>
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text(
-          'Add Words into Flash Card',
+          'Thêm từ vào Flash Card',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.bold,

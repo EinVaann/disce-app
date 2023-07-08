@@ -151,7 +151,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         Text(
-                          "Review",
+                          "Xem lại đáp án",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -227,7 +227,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                 SizedBox(
                                   width: 120,
                                   child: Text(
-                                    'You answered $_numOfRight out of 10 questions right.',
+                                    'Bạn trả lời đúng $_numOfRight câu trên 10 câu',
                                     maxLines: 4,
                                     style: const TextStyle(
                                       color: Colors.white,
@@ -247,7 +247,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      "Your answers: ",
+                      "Đáp án bạn chọn: ",
                       style: TextStyle(
                         fontSize: 24,
                       ),

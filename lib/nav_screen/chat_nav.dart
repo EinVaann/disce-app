@@ -146,8 +146,8 @@ Widget tabSwitch(int selectedIndex, Function switchFunction) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      tabSwitcher(selectedIndex == 0, 'Friends', switchFunction),
-      tabSwitcher(selectedIndex == 1, 'Find', switchFunction)
+      tabSwitcher(selectedIndex == 0, 'Bạn bè', switchFunction),
+      tabSwitcher(selectedIndex == 1, 'Tìm kiếm', switchFunction)
     ],
   );
 }
@@ -316,7 +316,7 @@ Widget unknowUser(
                 )
               : const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text("Emply list of users"),
+                  child: Text("Không có người dùng nào"),
                 )
         ],
       ),

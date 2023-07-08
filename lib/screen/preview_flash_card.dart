@@ -95,7 +95,7 @@ class _FlashCardScreenState extends State<PreViewFlashCardScreen>
     });
     if (response.statusCode == 200) {
       goBack();
-      showSnackBar("Copied Flash Card");
+      showSnackBar("Đã Copy Flash Card");
     } else {
       showSnackBar("Error");
     }

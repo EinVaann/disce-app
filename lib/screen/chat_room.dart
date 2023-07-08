@@ -126,7 +126,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: const Text(
-          'Share FlashCard',
+          'Chia sẻ FlashCard',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.bold,
