@@ -326,12 +326,18 @@ class _FlashCardScreenState extends State<FlashCardScreen>
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => QuizScreen(
-                                      flashCardId: _flashCard.id,
-                                    )));
+                        if (_flashCard.wordList.length < 10) {
+                          Navigator.pop(context);
+                          showSnackBar("Need atleast 10 words to do quiz");
+                        } else {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QuizScreen(
+                                        flashCardId: _flashCard.id,
+                                      )));
+                        }
                       },
                       child: const SizedBox(
                         width: double.infinity,
