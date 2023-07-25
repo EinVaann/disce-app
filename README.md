@@ -1,16 +1,11 @@
 # disce
 
-A new Flutter project.
+A Flutter App created to assisted the process of learning English, more specifically in learning new words.
+This repository is the mobile app of the project. To see the back-end part go to https://github.com/EinVaann/disce-api.git.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This app has many feature range from creating custom FlashCard to learn new words to taking quiz to better memorise words to messaging and sharing flashcard with other people.
+There are also a intergrated dictionary to aid the process.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+And there is a demo video of the project here: https://drive.google.com/file/d/1SSOAskeU_Cnd4pgAfIfc3-qcQ2YUDGAk/view?usp=sharing
